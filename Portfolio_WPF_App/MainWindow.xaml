@@ -1,12 +1,171 @@
-﻿<Window x:Class="Portfolio_WPF_App.MainWindow"
+﻿<mah:MetroWindow x:Class="Portfolio_WPF_App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Portfolio_WPF_App"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        xmlns:viewModels="clr-namespace:Portfolio_WPF_App.ViewModels"
+        xmlns:views="clr-namespace:Portfolio_WPF_App.Views"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        Title="Portfolio WPF App"
+        Width="1100"
+        Height="700"
+        WindowStartupLocation="CenterScreen"
+        WindowTransitionsEnabled="False"
+        mc:Ignorable="d">
+    
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CloseWindow}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands Visibility="{Binding HideWindowCommands}">
+            <Button x:Name="Btn_Login" Command="{Binding Path=LogIn}">
+                <StackPanel Orientation="Horizontal">
+                    <ContentControl>
+                        <ContentControl.Style>
+                            <Style TargetType="{x:Type ContentControl}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=IsLoggedIn}" Value="True">
+                                        <Setter Property="Content" >
+                                            <Setter.Value>
+                                                <Rectangle Fill="White" Width="15" Height="20">
+                                                    <Rectangle.Resources>
+                                                        <SolidColorBrush x:Key="BlackBrush" Color="Black" />
+                                                    </Rectangle.Resources>
+                                                    <Rectangle.OpacityMask>
+                                                        <VisualBrush Visual="{iconPacks:Material LockOpenOutline}" Stretch="Fill" />
+                                                    </Rectangle.OpacityMask>
+                                                </Rectangle>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=IsLoggedIn}" Value="False">
+                                        <Setter Property="Content" >
+                                            <Setter.Value>
+                                                <Rectangle Fill="White" Width="15" Height="20">
+                                                    <Rectangle.Resources>
+                                                        <SolidColorBrush x:Key="BlackBrush" Color="Black" />
+                                                    </Rectangle.Resources>
+                                                    <Rectangle.OpacityMask>
+                                                        <VisualBrush Visual="{iconPacks:Material Lock}" Stretch="Fill" />
+                                                    </Rectangle.OpacityMask>
+                                                </Rectangle>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
+                    <TextBlock Margin="4 0 0 0"
+                   VerticalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsLoggedIn}" Value="False" >
+                                        <Setter Property="Text" Value="Login Admin"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsLoggedIn}" Value="True" >
+                                        <Setter Property="Text" Value="Logged In"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
+
     <Grid>
-        
+
+        <Grid.Resources>
+
+            <viewModels:SelectedItemToContentConverter x:Key="SelectedItemToContentConverter" />
+
+            <!--  this is the template for the items (options)  -->
+            <DataTemplate x:Key="MenuItemTemplate" DataType="{x:Type mah:HamburgerMenuIconItem}">
+                <Grid x:Name="RootGrid"
+                      Height="48"
+                      Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="48" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Grid.Column="0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Content="{Binding Icon}"
+                                    Focusable="False" />
+                    <TextBlock Grid.Column="1"
+                               VerticalAlignment="Center"
+                               FontSize="16"
+                               Text="{Binding Label}" />
+                </Grid>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type mah:HamburgerMenu}}, Path=IsPaneOpen}" Value="False">
+                        <Setter TargetName="RootGrid" Property="ToolTip" Value="{Binding ToolTip, Mode=OneWay}" />
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+
+            <!--  these are the templates for the view models  -->
+            <DataTemplate DataType="{x:Type viewModels:HomeViewModel}">
+                <views:HomeView DataContext="{Binding}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
+                <views:SettingsView DataContext="{Binding}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:AboutViewModel}">
+                <views:AboutView DataContext="{Binding}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:DataViewModel}">
+                <views:DataView DataContext="{Binding}" />
+            </DataTemplate>
+
+        </Grid.Resources>
+
+        <mah:HamburgerMenu x:Name="HamburgerMenuControl"
+                           DisplayMode="CompactInline"
+                           IsPaneOpen="{Binding IsPaneOpened}"
+                           ItemTemplate="{StaticResource MenuItemTemplate}"
+                           ItemsSource="{Binding MenuItems}"
+                           OptionsItemTemplate="{StaticResource MenuItemTemplate}"
+                           OptionsItemsSource="{Binding MenuOptionItems}"
+                           SelectedIndex="{Binding SelectedIndex}"
+                           PaneBackground="#3C3C3B">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="ItemClick">
+                    <i:InvokeCommandAction Command="{Binding ItemClick}"
+                                           CommandParameter="{Binding ElementName=HamburgerMenuControl, Path=SelectedIndex}"/>
+                </i:EventTrigger>
+                <i:EventTrigger EventName="OptionsItemClick">
+                    <i:InvokeCommandAction Command="{Binding OptionItemClick}"
+                                           CommandParameter="{Binding ElementName=HamburgerMenuControl, Path=SelectedOptionsIndex}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <mah:HamburgerMenu.Content>
+                <MultiBinding Converter="{StaticResource SelectedItemToContentConverter}">
+                    <Binding FallbackValue="{x:Null}"
+                             Mode="OneWay"
+                             Path="SelectedItem.Tag"
+                             RelativeSource="{RelativeSource Self}" />
+                    <Binding FallbackValue="{x:Null}"
+                             Mode="OneWay"
+                             Path="SelectedOptionsItem.Tag"
+                             RelativeSource="{RelativeSource Self}" />
+                </MultiBinding>
+            </mah:HamburgerMenu.Content>
+
+        </mah:HamburgerMenu>
+
     </Grid>
-</Window>
+</mah:MetroWindow>

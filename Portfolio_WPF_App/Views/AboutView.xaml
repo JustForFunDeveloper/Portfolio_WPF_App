@@ -1,0 +1,161 @@
+﻿<UserControl x:Class="Portfolio_WPF_App.Views.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             mc:Ignorable="d" 
+             d:DesignHeight="600"
+             d:DesignWidth="1000">
+    <Grid x:Name="TheContentGrid">
+
+        <Grid.Resources>
+            <BitmapImage x:Key="SQLiteLogo" UriSource="../Ressources/SQLiteLogo.png" />
+            <BitmapImage x:Key="Check" UriSource="../Ressources/baseline_check_circle_white_48dp.png" />
+            <BitmapImage x:Key="Cancel" UriSource="../Ressources/baseline_cancel_white_48dp.png" />
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="#3C3C3B">
+            <TextBlock x:Name="Header"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="24"
+                                       Foreground="White"
+                                       Text="About" />
+        </Border>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="4*" />
+            </Grid.RowDefinitions>
+            <Image Source="{StaticResource SQLiteLogo}"
+                   Margin="20,20,20,10"/>
+            <Border Grid.Row="2" x:Name="Dash_About"
+                    Grid.Column="0"
+                    Margin="50,20,50,20"
+                    BorderThickness="1"
+                    BorderBrush="#AFCA0B"
+                    Width="Auto"
+                    Height="Auto"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Width="{Binding ActualWidth, ElementName=Dash_About}"
+                            Background="#3C3C3B">
+                        <TextBlock Text="Portfolio WPF App"
+                                   FontSize="23"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Foreground="White"/>
+                    </Border>
+                    <StackPanel Grid.Row="1"
+                                HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center">
+                            <TextBlock Text="UI Version:"
+                                       FontSize="23"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding TextVersion}"
+                                       FontSize="23"
+                                       Margin="10,0,0,0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,20,0,0">
+                            <TextBlock Text="Logic:"
+                                       FontSize="23"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding TextLogicTitle}"
+                                       FontSize="23"
+                                       HorizontalAlignment="Center"
+                                       Margin="10,0,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center">
+                            <TextBlock Text="Logic Version:"
+                                       FontSize="23"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding TextLogicVersion}"
+                                       FontSize="23"
+                                       Margin="10,0,0,0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="JustForFunDeveloper"
+                                   FontSize="23"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,20,0,0"/>
+                        <TextBlock Text="Portfolio project"
+                                   FontSize="20"
+                                   HorizontalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,20,0,0">
+                            <iconPacks:PackIconMaterial  Kind="Email"
+                                                         VerticalAlignment="Center"
+                                                         Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding EMailText}"
+                                       FontSize="20"
+                                       HorizontalAlignment="Center"
+                                       TextDecorations="Underline"
+                                       Style="{DynamicResource HoverStyle}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseDown">
+                                        <i:InvokeCommandAction Command="{Binding OpenEmail}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <TextBlock.Resources>
+                                    <Style TargetType="TextBlock" x:Key="HoverStyle">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#009FE3" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Resources>
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,20,0,20">
+                            <iconPacks:PackIconMaterial  Kind="Web"
+                                                         VerticalAlignment="Center"
+                                                         Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding WebsiteText}"
+                                       FontSize="20"
+                                       HorizontalAlignment="Center"
+                                       TextDecorations="Underline"
+                                       Style="{DynamicResource HoverStyle}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseDown">
+                                        <i:InvokeCommandAction Command="{Binding OpenWeb}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <TextBlock.Resources>
+                                    <Style TargetType="TextBlock" x:Key="HoverStyle">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#009FE3" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Resources>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
