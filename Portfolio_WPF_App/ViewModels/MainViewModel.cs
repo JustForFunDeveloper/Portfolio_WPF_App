@@ -35,7 +35,8 @@ namespace Portfolio_WPF_App.ViewModels
             _mainViewModel = this;
             Mediator.Register("OnLoginTry", LogInUser);
             Mediator.Register("CloseLoginWindow", HideLoginWindow);
-            Mediator.Register("OnViewChange", OnViewChange);
+            Mediator.Register("OnViewLogLevelChange", OnViewLogLevelChange);
+            Mediator.Register("OnViewDataChange", OnViewDataChange);
         }
 
         public static MainViewModel getInstance { get => _mainViewModel; }
@@ -298,11 +299,18 @@ namespace Portfolio_WPF_App.ViewModels
                 _loginWindow.Hide();
         }
 
-        private void OnViewChange(object value)
+        private void OnViewLogLevelChange(object value)
         {
             KeyValuePair<int, LogLevel> keyValuePair = (KeyValuePair<int, LogLevel>)value;
             SelectedIndex = keyValuePair.Key;
             Mediator.NotifyColleagues("OnLogLevel", keyValuePair.Value);
+        }
+
+        private void OnViewDataChange(object value)
+        {
+            KeyValuePair<int, int> keyValuePair = (KeyValuePair<int, int>)value;
+            SelectedIndex = keyValuePair.Key;
+            Mediator.NotifyColleagues("OnDataChange", keyValuePair.Value);
         }
     }
 }

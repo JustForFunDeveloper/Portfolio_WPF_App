@@ -6,7 +6,6 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace Portfolio_WPF_App.ViewModels
 {
-    //TODO: Bind EMailText and WebsiteText Property
     public class AboutViewModel : PropertyChangedViewModel
     {
         private readonly PropertyChangedViewModel _mainViewModel;
@@ -15,12 +14,18 @@ namespace Portfolio_WPF_App.ViewModels
         private string _textLogicTitle = "Title ?";
         private string _textLogicVersion = "V ?";
 
+        private string _eMailText = "?";
+        private string _websiteText = "?";
+
         private ICommand _openEmail;
         private ICommand _openWeb;
 
         public AboutViewModel(PropertyChangedViewModel mainViewModel)
         {
             _mainViewModel = mainViewModel;
+            EMailText = GlobalConstants.COMPANY_MAIL_ADDRESS;
+            WebsiteText = GlobalConstants.COMPANY_WEB_ADDRESS;
+
             Mediator.Register("OnTextVersion", OnTextVersion);
             Mediator.Register("OnTextLogicTitle", OnTextLogicTitle);
             Mediator.Register("OnTextLogicVersion", OnTextLogicVersion);
@@ -66,6 +71,30 @@ namespace Portfolio_WPF_App.ViewModels
             }
         }
 
+        public void OnTextLogicVersion(object value)
+        {
+            TextLogicVersion = (string)value;
+        }
+
+        public string EMailText
+        {
+            get { return _eMailText; }
+            set
+            {
+                _eMailText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string WebsiteText
+        {
+            get { return _websiteText; }
+            set
+            {
+                _websiteText = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ICommand OpenEmail
         {
@@ -125,11 +154,6 @@ namespace Portfolio_WPF_App.ViewModels
         private void SaveOpenWebCommand()
         {
             System.Diagnostics.Process.Start(GlobalConstants.COMPANY_WEB_ADDRESS);
-        }
-
-        public void OnTextLogicVersion(object value)
-        {
-            TextLogicVersion = (string)value;
         }
     }
 }

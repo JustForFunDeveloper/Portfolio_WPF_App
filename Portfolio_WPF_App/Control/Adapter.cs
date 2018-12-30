@@ -1,6 +1,7 @@
 ﻿using Portfolio_WPF_App.Core.Handler;
 using Portfolio_WPF_App.Core.Logic;
 using Portfolio_WPF_App.GlobalValues;
+using Portfolio_WPF_App.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -97,27 +98,27 @@ namespace Portfolio_WPF_App.Control
         public void OnOpenConfig(object sender, object list)
         {
             ListArguments listArgument = (ListArguments)list;
-            List<string> data = (List<string>)listArgument.Value;
-            _controller.TextConfigNameLoaded(data[1]);
-            string path = data[0];
-            path = path.Replace(data[1], "");
-            _controller.TextConfigLoaded(_logic.FileHandler.ReadAllText(data[1], path));
+            List<object> data = (List<object>)listArgument.Value;
+            _controller.TextConfigNameLoaded((string)data[1]);
+            string path = (string)data[0];
+            path = path.Replace((string)data[1], "");
+            _controller.TextConfigLoaded(_logic.FileHandler.ReadAllText((string)data[1], path));
         }
 
         public void OnActivateConfig(object sender, object list)
         {
             ListArguments listArgument = (ListArguments)list;
-            List<string> data = (List<string>)listArgument.Value;
-            _controller.TextActiveConfigFile(data[0]);
-            _logic.Config = _logic.XmlHandler.GetDeserializedConfigObject(data[1]);
+            List<object> data = (List<object>)listArgument.Value;
+            _controller.TextActiveConfigFile((string)data[0]);
+            _logic.Config = _logic.XmlHandler.GetDeserializedConfigObject((string)data[1]);
             //_logic.PrintTestXML(_logic.Config);
 
             // Creates a local copy in the config file path if it doesn't exist.
-            short result = _logic.FileHandler.CreateFileIfNotExist(data[0], GlobalConstants.CONFIG_FILE_PATH);
+            short result = _logic.FileHandler.CreateFileIfNotExist((string)data[0], GlobalConstants.CONFIG_FILE_PATH);
             if (result != 1 && result != -1)
-                _logic.FileHandler.AppendText(data[0], data[1], GlobalConstants.CONFIG_FILE_PATH);
+                _logic.FileHandler.AppendText((string)data[0], (string)data[1], GlobalConstants.CONFIG_FILE_PATH);
             // Overwrite the config.ini with the current value.
-            _logic.FileHandler.OverwriteFile(GlobalConstants.CONFIG_FILE_NAME, data[0], GlobalConstants.CONFIG_FILE_PATH);
+            _logic.FileHandler.OverwriteFile(GlobalConstants.CONFIG_FILE_NAME, (string)data[0], GlobalConstants.CONFIG_FILE_PATH);
         }
 
         public void OnReloadDataView(object sender, object nothing)
@@ -134,11 +135,12 @@ namespace Portfolio_WPF_App.Control
         public void OnSaveData(object sender, object list)
         {
             ListArguments listArgument = (ListArguments)list;
-            List<string> data = (List<string>)listArgument.Value;
+            List<object> data = (List<object>)listArgument.Value;
 
-            _logic.FileHandler.CreateFileIfNotExist(data[0]);
-            string[] logList = data[1].Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            _logic.FileHandler.AppendAll(data[0], logList);
+            _logic.FileHandler.CreateFileIfNotExist((string)data[0]);
+            string row = (string)data[1];
+            string[] logList = row.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            _logic.FileHandler.AppendAll((string)data[0], logList);
         }
 
         #region Test Method remove later

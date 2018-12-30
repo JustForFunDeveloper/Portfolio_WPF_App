@@ -1,7 +1,9 @@
 ﻿using Microsoft.Win32;
 using Portfolio_WPF_App.ViewModels.Handler;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Portfolio_WPF_App.ViewModels
@@ -13,10 +15,19 @@ namespace Portfolio_WPF_App.ViewModels
 
         private ICommand _openConfig;
         private ICommand _saveConfig;
+        private ICommand _saveNewUserName;
+        private ICommand _saveNewPassword;
 
         private string _textConfigNameLoaded = "No config openend";
         private string _textConfigLoaded = "";
         private string _textActiveConfigFile = "No config loaded";
+        private string _newUsername = "";
+
+        PasswordBox _newPassWordBox;
+        PasswordBox _repeatPassWordBox;
+
+        private string _newPassword = "";
+        private string _repeatPassword = "";
 
         public SettingsViewModel(PropertyChangedViewModel mainViewModel)
         {
@@ -24,6 +35,11 @@ namespace Portfolio_WPF_App.ViewModels
             Mediator.Register("OnTextConfigNameLoaded", OnTextConfigNameLoaded);
             Mediator.Register("OnTextConfigLoaded", OnTextConfigLoaded);
             Mediator.Register("OnTextActiveConfigFile", OnTextActiveConfigFile);
+
+            Mediator.Register("OnNewPasswordChanged", OnNewPasswordChanged);
+            Mediator.Register("OnNewPassswordEnterPressed", OnNewPassswordEnterPressed);
+
+            Mediator.Register("OnRepeatPasswordChanged", OnRepeatPasswordChanged);
         }
 
         public ICommand OpenConfig
@@ -77,6 +93,57 @@ namespace Portfolio_WPF_App.ViewModels
             Mediator.NotifyColleagues("ActivateConfigCommand", data);
         }
 
+        public ICommand SaveNewUserName
+        {
+            get
+            {
+                if (_saveNewUserName == null)
+                {
+                    _saveNewUserName = new RelayCommand(
+                        param => this.SaveNewUserNameCommand(),
+                        param => this.CanSaveNewUserNameCommand()
+                    );
+                }
+                return _saveNewUserName;
+            }
+        }
+
+        private bool CanSaveNewUserNameCommand()
+        {
+            return true;
+        }
+
+        private void SaveNewUserNameCommand()
+        {
+            Mediator.NotifyColleagues("SaveNewUserNameCommand", NewUsername);
+        }
+
+        public ICommand SaveNewPassword
+        {
+            get
+            {
+                if (_saveNewPassword == null)
+                {
+                    _saveNewPassword = new RelayCommand(
+                        param => this.SaveNewPasswordCommand(),
+                        param => this.CanSaveNewPasswordCommand()
+                    );
+                }
+                return _saveNewPassword;
+            }
+        }
+
+        private bool CanSaveNewPasswordCommand()
+        {
+            return true;
+        }
+
+        private void SaveNewPasswordCommand()
+        {
+            //TODO: Implement pre check of newPassword and repeatPassword
+            Mediator.NotifyColleagues("SaveNewPasswordCommand", NewUsername);
+        }
+
         public string TextConfigNameLoaded
         {
             get { return _textConfigNameLoaded; }
@@ -120,6 +187,51 @@ namespace Portfolio_WPF_App.ViewModels
         public void OnTextActiveConfigFile(object value)
         {
             TextActiveConfigFile = (string)value;
+        }
+
+        public string NewUsername
+        {
+            get { return _newUsername; }
+            set
+            {
+                _newUsername = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string NewPassword
+        {
+            get { return _newPassword; }
+            set
+            {
+                _newPassword = value;
+            }
+        }
+
+        public void OnNewPasswordChanged(object value)
+        {
+            _newPassWordBox = (PasswordBox)value;
+            NewPassword = (string)_newPassWordBox.Password;
+        }
+
+        public void OnNewPassswordEnterPressed(object value)
+        {
+            SaveNewPasswordCommand();
+        }
+
+        public string Password
+        {
+            get { return _repeatPassword; }
+            set
+            {
+                _repeatPassword = value;
+            }
+        }
+
+        public void OnRepeatPasswordChanged(object value)
+        {
+            _repeatPassWordBox = (PasswordBox)value;
+            Password = (string)_repeatPassWordBox.Password;
         }
 
         private void OpenFileDialog()

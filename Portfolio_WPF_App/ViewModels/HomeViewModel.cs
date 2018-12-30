@@ -29,7 +29,7 @@ namespace Portfolio_WPF_App.ViewModels
             _mainViewModel = mainViewModel;
             Mediator.Register("OnDbConnected", OnDbConnected);
 
-            Mediator.Register("OnTextMsgBuffer", OnTextMsgInDB);
+            Mediator.Register("OnTextMsgInDB", OnTextMsgInDB);
 
             Mediator.Register("OnTextError", OnTextError);
             Mediator.Register("OnTextWarning", OnTextWarning);
@@ -42,7 +42,6 @@ namespace Portfolio_WPF_App.ViewModels
             set
             {
                 _dbConnected = value;
-                TextDBTooltip = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss.fff");
                 OnPropertyChanged();
             }
         }
@@ -50,6 +49,7 @@ namespace Portfolio_WPF_App.ViewModels
         public void OnDbConnected(object value)
         {
             DbConnected = (bool)value;
+            TextDBTooltip = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss.fff");
         }
 
         public string TextMsgInDB
@@ -122,11 +122,6 @@ namespace Portfolio_WPF_App.ViewModels
             }
         }
 
-        public void OnTextDBTooltip(object value)
-        {
-            TextInfo = (string)value;
-        }
-
         public ICommand OnMsginDB
         {
             get
@@ -149,9 +144,8 @@ namespace Portfolio_WPF_App.ViewModels
 
         private void SaveOnMsginDB()
         {
-            //TODO: Change DataView to Message Mode
-            //KeyValuePair<int, LogLevel> value = new KeyValuePair<int, LogLevel>(2, LogLevel.INFO);
-            //Mediator.NotifyColleagues("OnViewChange", value);
+            KeyValuePair<int, int> value = new KeyValuePair<int, int>(2, 1);
+            Mediator.NotifyColleagues("OnViewDataChange", value);
         }
 
         public ICommand OnErrorMessages
@@ -177,7 +171,7 @@ namespace Portfolio_WPF_App.ViewModels
         private void SaveOnErrorMessagesCommand()
         {
             KeyValuePair<int, LogLevel> value = new KeyValuePair<int, LogLevel>(2, LogLevel.ERROR);
-            Mediator.NotifyColleagues("OnViewChange", value);
+            Mediator.NotifyColleagues("OnViewLogLevelChange", value);
         }
 
         public ICommand OnWarningMessages
@@ -203,7 +197,7 @@ namespace Portfolio_WPF_App.ViewModels
         private void SaveOnWarningMessagesCommand()
         {
             KeyValuePair<int, LogLevel> value = new KeyValuePair<int, LogLevel>(2, LogLevel.WARNING);
-            Mediator.NotifyColleagues("OnViewChange", value);
+            Mediator.NotifyColleagues("OnViewLogLevelChange", value);
         }
 
         public ICommand OnInfoMessages
@@ -229,7 +223,13 @@ namespace Portfolio_WPF_App.ViewModels
         private void SaveOnInfoMessagesCommand()
         {
             KeyValuePair<int, LogLevel> value = new KeyValuePair<int, LogLevel>(2, LogLevel.INFO);
-            Mediator.NotifyColleagues("OnViewChange", value);
+            Mediator.NotifyColleagues("OnViewLogLevelChange", value);
+        }
+
+        private void OntextDBTooltip(object value)
+        {
+            DateTime dateTime = (DateTime)value;
+            _textDBTooltip = dateTime.ToString("yyyy-MM-dd hh:mm:ss.fff"); ;
         }
     }
 }

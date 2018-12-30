@@ -72,7 +72,8 @@
     </ApplicationDefinition>
     <Compile Include="Control\Adapter.cs" />
     <Compile Include="Control\Controller.cs" />
-    <Compile Include="Control\ControllerInterface.cs" />
+    <Compile Include="DataModel\Data.cs" />
+    <Compile Include="DataModel\DataButton.cs" />
     <Compile Include="DataModel\Log.cs" />
     <Compile Include="GlobalValues\GlobalConstants.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
@@ -82,10 +83,15 @@
     <Compile Include="ViewModels\Handler\Mediator.cs" />
     <Compile Include="ViewModels\Handler\RelayCommand.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
+    <Compile Include="ViewModels\Interfaces\IAboutView.cs" />
+    <Compile Include="ViewModels\Interfaces\IDataView.cs" />
+    <Compile Include="ViewModels\Interfaces\IHomeView.cs" />
+    <Compile Include="ViewModels\Interfaces\ISettingsView.cs" />
+    <Compile Include="ViewModels\Interfaces\ListArguments.cs" />
     <Compile Include="ViewModels\LoginWindowModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\PropertyChangedViewModel.cs" />
-    <Compile Include="ViewModels\SelectedItemToContentConverter.cs" />
+    <Compile Include="ViewModels\Common\PropertyChangedViewModel.cs" />
+    <Compile Include="ViewModels\Common\SelectedItemToContentConverter.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
@@ -202,5 +208,6 @@
       <Name>Portfolio_WPF_App.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

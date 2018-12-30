@@ -108,7 +108,10 @@
                     FontSize="18"
                     HorizontalAlignment="Left"
                     Margin="10,0,0,0"
-                    BorderThickness="0">
+                    BorderThickness="0"
+                    SelectedIndex="{Binding SplitButtonIndex}"
+                    ItemsSource="{Binding SplitButtonItems}"
+                    DisplayMemberPath="Name">
                 </Controls:SplitButton>
             </StackPanel>
             <Border x:Name="Dash_Connection"

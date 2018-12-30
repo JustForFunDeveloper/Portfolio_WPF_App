@@ -1,12 +1,9 @@
-﻿using Microsoft.Win32;
-using Portfolio_WPF_App.Core.Handler;
+﻿using Portfolio_WPF_App.Core.Handler;
 using Portfolio_WPF_App.DataModel;
 using Portfolio_WPF_App.ViewModels.Handler;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -21,15 +18,15 @@ namespace Portfolio_WPF_App.ViewModels
         private Visibility _hideAdminContent = Visibility.Hidden;
 
         private ICommand _saveLog;
-        private ICommand _loadData;
 
-        private string _textLogFileName = "No config loaded";
-        private string _textLogFile = "No config loaded";
+        private string _textLogFileName = "No data loaded";
 
         private bool _DEBUGChecked = false;
         private bool _INFOChecked = false;
         private bool _WARNINGChecked = false;
         private bool _ERRORChecked = false;
+
+        private int _splitButtonIndex = 0;
 
         private CultureInfo _cultureFormat;
         private DateTime _selectedDateTime;
@@ -38,14 +35,18 @@ namespace Portfolio_WPF_App.ViewModels
         private int counter = 1;
 
         public ObservableCollection<Log> LogCollection { get; } = new ObservableCollection<Log>();
+        public ObservableCollection<DataButton> SplitButtonItems { get; } = new ObservableCollection<DataButton>();
+        //TODO: Create seperate Data Collection
 
         public DataViewModel(PropertyChangedViewModel mainViewModel)
         {
             _mainViewModel = mainViewModel;
             Mediator.Register("OnAdminLogin", OnAdminLogin);
-            Mediator.Register("OnTextLogFileName", OnTextLogFileName);
-            Mediator.Register("OnTextLogFile", OnTextLogFile);
             Mediator.Register("OnLogLevel", OnLogLevel);
+            Mediator.Register("OnDataChange", OnDataChange);
+
+            Mediator.Register("OnLogData", OnLogData);
+            Mediator.Register("OnData", OnData);
 
             CultureInfo culture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
             culture.DateTimeFormat.LongDatePattern = "yyyy-MM-dd";
@@ -53,6 +54,9 @@ namespace Portfolio_WPF_App.ViewModels
             CultureFormat = culture;
 
             SelectedDateTime = DateTime.Today;
+
+            SplitButtonItems.Add(new DataButton("Logs"));
+            SplitButtonItems.Add(new DataButton("Data"));
 
             timer = new DispatcherTimer(DispatcherPriority.Background, Application.Current.Dispatcher);
             timer.Interval = TimeSpan.FromMilliseconds(100);
@@ -176,49 +180,42 @@ namespace Portfolio_WPF_App.ViewModels
             }
         }
 
-        public void OnTextLogFileName(object value)
+        public void OnLogData(object value)
         {
             TextLogFileName = (string)value;
         }
 
-        public string TextLogFile
+        private void OnData(object obj)
         {
-            get { return _textLogFile; }
-            set
-            {
-                _textLogFile = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public void OnTextLogFile(object value)
-        {
-            TextLogFile = (string)value;
+            //TODO: Implement Data Handling
+            throw new NotImplementedException();
         }
 
         private void OpenSaveFileDialog()
         {
-            if (TextLogFile.Length.Equals(0))
-            {
-                Console.WriteLine("Log is empty!");
-                return;
-            }
+            //TODO: Rework this!
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
-            saveFileDialog.Title = "Save Log File";
-            saveFileDialog.DefaultExt = "txt";
-            saveFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            saveFileDialog.FilterIndex = 1;
-            string timeString = DateTime.Now.ToString();
-            timeString = timeString.Replace(':', '-');
-            timeString = timeString.Replace(' ', '_');
-            saveFileDialog.FileName = timeString;
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                List<string> data = new List<string> { saveFileDialog.SafeFileName, TextLogFile };
-                Mediator.NotifyColleagues("SaveLogCommand", data);
-            }
+            //if (TextLogFile.Length.Equals(0))
+            //{
+            //    Console.WriteLine("Log is empty!");
+            //    return;
+            //}
+
+            //SaveFileDialog saveFileDialog = new SaveFileDialog();
+            //saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+            //saveFileDialog.Title = "Save Log File";
+            //saveFileDialog.DefaultExt = "txt";
+            //saveFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            //saveFileDialog.FilterIndex = 1;
+            //string timeString = DateTime.Now.ToString();
+            //timeString = timeString.Replace(':', '-');
+            //timeString = timeString.Replace(' ', '_');
+            //saveFileDialog.FileName = timeString;
+            //if (saveFileDialog.ShowDialog() == true)
+            //{
+            //    List<string> data = new List<string> { saveFileDialog.SafeFileName, TextLogFile };
+            //    Mediator.NotifyColleagues("SaveLogCommand", data);
+            //}
         }
 
         public bool DEBUGChecked
@@ -299,6 +296,7 @@ namespace Portfolio_WPF_App.ViewModels
                 default:
                     break;
             }
+            SplitButtonIndex = 0;
         }
 
         public CultureInfo CultureFormat
@@ -321,30 +319,20 @@ namespace Portfolio_WPF_App.ViewModels
             }
         }
 
-        public ICommand LoadData
+        public int SplitButtonIndex
         {
-            get
+            get { return _splitButtonIndex; }
+            set
             {
-                if (_loadData == null)
-                {
-                    _loadData = new RelayCommand(
-                        param => this.LoadDataCommand(),
-                        param => this.CanLoadDataCommand()
-                    );
-                }
-                return _loadData;
+                _splitButtonIndex = value;
+                OnPropertyChanged();
             }
         }
 
-        private bool CanLoadDataCommand()
+        private void OnDataChange(object value)
         {
-            return true;
+            SplitButtonIndex = (int)value;
+            //TODO: Reload Data in the table!
         }
-
-        private void LoadDataCommand()
-        {
-            Console.WriteLine("LoadDataCommand: " + _selectedDateTime.ToString("yyy-MM-dd HH:mm:ss.fff"));
-        }
-
     }
 }

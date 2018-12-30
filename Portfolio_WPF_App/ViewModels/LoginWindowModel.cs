@@ -70,7 +70,6 @@ namespace Portfolio_WPF_App.ViewModels
         {
             _passWordBox = (PasswordBox)value;
             Password = (string)_passWordBox.Password;
-
         }
 
         public ICommand Abort

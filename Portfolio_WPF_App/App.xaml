@@ -28,7 +28,7 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-            <Style TargetType="{x:Type controls:DropDownButton}">
+            <Style TargetType="{x:Type controls:SplitButton}">
                 <Setter Property="Background" Value="{DynamicResource AccentColorBrush}"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Foreground" Value="White"/>

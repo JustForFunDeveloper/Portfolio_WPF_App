@@ -205,7 +205,9 @@
                                    FontSize="20"/>
                         <PasswordBox Grid.Column="1"
                                      Height="23"
-                                     PasswordChar="*"/>
+                                     PasswordChar="*"
+                                     PasswordChanged="NewPasswordBox_PasswordChanged"
+                                     KeyDown="NewPasswordBox_KeyDown"/>
                     </Grid>
                     <Grid Grid.Row="2"
                           Grid.Column="2"
@@ -220,7 +222,9 @@
                                    FontSize="20"/>
                         <PasswordBox Grid.Column="1"
                                      Height="23"
-                                     PasswordChar="*"/>
+                                     PasswordChar="*"
+                                     PasswordChanged="RepeatPasswordBox_PasswordChanged"
+                                     KeyDown="RepeatPasswordBox_KeyDown"/>
                     </Grid>
                     <Grid Grid.Row="3"
                           Grid.Column="2"

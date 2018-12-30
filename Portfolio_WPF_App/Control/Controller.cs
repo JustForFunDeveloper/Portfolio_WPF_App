@@ -1,10 +1,11 @@
 ﻿using Portfolio_WPF_App.ViewModels.Handler;
+using Portfolio_WPF_App.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace Portfolio_WPF_App.Control
 {
-    public class Controller : IController
+    public class Controller : IHomeView
     {
         private static Controller instance = null;
         private static readonly object padlock = new object();
@@ -99,7 +100,7 @@ namespace Portfolio_WPF_App.Control
         public void TextMsgInDB(string value)
         {
             //TODO: Rename this
-            Mediator.NotifyColleagues("OnTextMsgBuffer", value);
+            Mediator.NotifyColleagues("OnTextMsgInDB", value);
         }
 
         /// <summary>
@@ -244,7 +245,7 @@ namespace Portfolio_WPF_App.Control
         /// <param name="value"></param>
         protected virtual void OnOpenConfig(object value)
         {
-            List<string> list = (List<string>)value;
+            List<object> list = (List<object>)value;
             OpenConfig?.Invoke(this, new ListArguments(list));
         }
 
@@ -254,7 +255,7 @@ namespace Portfolio_WPF_App.Control
         /// <param name="value"></param>
         protected virtual void OnActivateConfig(object value)
         {
-            List<string> list = (List<string>)value;
+            List<object> list = (List<object>)value;
             ActivateConfig?.Invoke(this, new ListArguments(list));
         }
 
@@ -273,7 +274,7 @@ namespace Portfolio_WPF_App.Control
         /// <param name="value"></param>
         protected virtual void OnSaveLog(object value)
         {
-            List<string> list = (List<string>)value;
+            List<object> list = (List<object>)value;
             SaveData?.Invoke(this, new ListArguments(list));
         }
         #endregion
