@@ -125,7 +125,7 @@ namespace Portfolio_WPF_App.Core.Handler
         /// <param name="text">The given text to append.</param>
         /// <param name="path">The given path. Should end with '\'.</param>
         /// <returns>Returns -1 if something went wrong.</returns>
-        public short AppendText(string fileName, string text, string path = "")
+        public short AppendText(string fileName, string text, string path = "", bool withNewline = true)
         {
             try
             {
@@ -135,7 +135,10 @@ namespace Portfolio_WPF_App.Core.Handler
 
                 using (StreamWriter file = new StreamWriter(path + fileName, true))
                 {
-                    file.WriteLine(text);
+                    if (withNewline)
+                        file.WriteLine(text);
+                    else
+                        file.Write(text);
                 }
             }
             catch (Exception e)

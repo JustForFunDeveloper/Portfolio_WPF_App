@@ -22,9 +22,9 @@ namespace Portfolio_WPF_App.Core.Handler
             {
                 using (XmlWriter writer = XmlWriter.Create(stringWriter, settings))
                 {
-                    //TODO: dont create an empty config if the given config is null
                     if (config == null)
-                        xmlSerializer.Serialize(writer, new Config());
+                        LogHandler.WriteLog(this + ":  GetSerializedConfigXML -> config = null", LogLevel.ERROR);
+                    //xmlSerializer.Serialize(writer, new Config());
                     else
                         xmlSerializer.Serialize(writer, config);
                     return stringWriter.ToString();

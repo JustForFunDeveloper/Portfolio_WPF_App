@@ -1,9 +1,13 @@
-﻿using Portfolio_WPF_App.Core.Handler;
+﻿using Microsoft.Win32;
+using Portfolio_WPF_App.Core.Handler;
 using Portfolio_WPF_App.DataModel;
 using Portfolio_WPF_App.ViewModels.Handler;
+using Portfolio_WPF_App.ViewModels.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -17,9 +21,13 @@ namespace Portfolio_WPF_App.ViewModels
         private Visibility _hideAdminNotice = Visibility.Visible;
         private Visibility _hideAdminContent = Visibility.Hidden;
 
+        private Visibility _hideScrollViewer = Visibility.Visible;
+        private Visibility _hideDataGrid = Visibility.Hidden;
+
         private ICommand _saveLog;
 
-        private string _textLogFileName = "No data loaded";
+        private string _textLogFileName = "LOGS";
+        private string _textLogFile = "";
 
         private bool _DEBUGChecked = false;
         private bool _INFOChecked = false;
@@ -130,6 +138,26 @@ namespace Portfolio_WPF_App.ViewModels
             }
         }
 
+        public Visibility HideScrollViewer
+        {
+            get { return _hideScrollViewer; }
+            set
+            {
+                _hideScrollViewer = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility HideDataGrid
+        {
+            get { return _hideDataGrid; }
+            set
+            {
+                _hideDataGrid = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand SaveLog
         {
             get
@@ -180,9 +208,21 @@ namespace Portfolio_WPF_App.ViewModels
             }
         }
 
+        public string TextLogFile
+        {
+            get { return _textLogFile; }
+            set
+            {
+                _textLogFile = value;
+                OnPropertyChanged();
+            }
+        }
+
         public void OnLogData(object value)
         {
-            TextLogFileName = (string)value;
+            ListArguments listArguments = (ListArguments)value;
+            TextLogFileName = (string)listArguments.Value[0];
+            TextLogFile = String.Join(Environment.NewLine, listArguments.Value);
         }
 
         private void OnData(object obj)
@@ -193,29 +233,33 @@ namespace Portfolio_WPF_App.ViewModels
 
         private void OpenSaveFileDialog()
         {
-            //TODO: Rework this!
+            if (SplitButtonIndex.Equals(0))
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+                saveFileDialog.Title = "Save Log File";
+                saveFileDialog.DefaultExt = "txt";
+                saveFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                saveFileDialog.FilterIndex = 1;
+                string timeString = DateTime.Now.ToString();
+                timeString = timeString.Replace(':', '-');
+                timeString = timeString.Replace(' ', '_');
+                saveFileDialog.FileName = timeString;
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    List<object> data = new List<object> { saveFileDialog.SafeFileName, TextLogFile };
+                    Mediator.NotifyColleagues("SaveDataCommand", data);
+                }
+            }
+            else
+            {
+                //TODO: Save Datagrid Entries into a file!
+            }
 
-            //if (TextLogFile.Length.Equals(0))
-            //{
-            //    Console.WriteLine("Log is empty!");
-            //    return;
-            //}
-
-            //SaveFileDialog saveFileDialog = new SaveFileDialog();
-            //saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
-            //saveFileDialog.Title = "Save Log File";
-            //saveFileDialog.DefaultExt = "txt";
-            //saveFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            //saveFileDialog.FilterIndex = 1;
-            //string timeString = DateTime.Now.ToString();
-            //timeString = timeString.Replace(':', '-');
-            //timeString = timeString.Replace(' ', '_');
-            //saveFileDialog.FileName = timeString;
-            //if (saveFileDialog.ShowDialog() == true)
-            //{
-            //    List<string> data = new List<string> { saveFileDialog.SafeFileName, TextLogFile };
-            //    Mediator.NotifyColleagues("SaveLogCommand", data);
-            //}
+            if (TextLogFile.Length.Equals(0))
+            {
+                return;
+            }
         }
 
         public bool DEBUGChecked
@@ -224,6 +268,8 @@ namespace Portfolio_WPF_App.ViewModels
             set
             {
                 _DEBUGChecked = value;
+                SplitButtonIndex = 0;
+                LoadLogDataViewBasedOnFilterStatus();
                 OnPropertyChanged();
             }
         }
@@ -239,6 +285,8 @@ namespace Portfolio_WPF_App.ViewModels
             set
             {
                 _INFOChecked = value;
+                SplitButtonIndex = 0;
+                LoadLogDataViewBasedOnFilterStatus();
                 OnPropertyChanged();
             }
         }
@@ -249,6 +297,8 @@ namespace Portfolio_WPF_App.ViewModels
             set
             {
                 _WARNINGChecked = value;
+                SplitButtonIndex = 0;
+                LoadLogDataViewBasedOnFilterStatus();
                 OnPropertyChanged();
             }
         }
@@ -259,6 +309,8 @@ namespace Portfolio_WPF_App.ViewModels
             set
             {
                 _ERRORChecked = value;
+                SplitButtonIndex = 0;
+                LoadLogDataViewBasedOnFilterStatus();
                 OnPropertyChanged();
             }
         }
@@ -325,7 +377,11 @@ namespace Portfolio_WPF_App.ViewModels
             set
             {
                 _splitButtonIndex = value;
-                OnPropertyChanged();
+                if (value.Equals(0))
+                    HideDataGridAndShowScrollViewer(true);
+                else
+                    HideDataGridAndShowScrollViewer(false);
+                    OnPropertyChanged();
             }
         }
 
@@ -334,5 +390,53 @@ namespace Portfolio_WPF_App.ViewModels
             SplitButtonIndex = (int)value;
             //TODO: Reload Data in the table!
         }
+
+        private void HideDataGridAndShowScrollViewer(bool value)
+        {
+            if (value)
+            {
+                HideDataGrid = Visibility.Hidden;
+                HideScrollViewer = Visibility.Visible;
+                LoadLogDataViewBasedOnFilterStatus();
+            }
+            else
+            {
+                HideDataGrid = Visibility.Visible;
+                HideScrollViewer = Visibility.Hidden;
+                TextLogFileName = "DATA BASE";
+            }
+        }
+
+        private void LoadLogDataViewBasedOnFilterStatus()
+        {
+            TextLogFileName = "??";
+            if (AllCheckBoxesChecked())
+                Mediator.NotifyColleagues("RequestLogDataCommand", null);
+            else
+            {
+                List<object> logLevelsChecked = new List<object>();
+                if (DEBUGChecked)
+                    logLevelsChecked.Add(LogLevel.DEBUG);
+                if (INFOChecked)
+                    logLevelsChecked.Add(LogLevel.INFO);
+                if (WARNINGChecked)
+                    logLevelsChecked.Add(LogLevel.WARNING);
+                if (ERRORChecked)
+                    logLevelsChecked.Add(LogLevel.ERROR);
+
+                Mediator.NotifyColleagues("RequestLogLevelFilteredDataCommand", logLevelsChecked);
+            }
+        }
+
+        private bool AllCheckBoxesChecked()
+        {
+            if (DEBUGChecked && INFOChecked && WARNINGChecked && ERRORChecked)
+                return true;
+            else if (!DEBUGChecked && !INFOChecked && !WARNINGChecked && !ERRORChecked)
+                return true;
+            else
+                return false;
+        }
+
     }
 }

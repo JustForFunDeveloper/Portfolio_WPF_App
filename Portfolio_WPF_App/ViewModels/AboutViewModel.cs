@@ -1,4 +1,5 @@
-﻿using Portfolio_WPF_App.GlobalValues;
+﻿using Portfolio_WPF_App.Core.Handler;
+using Portfolio_WPF_App.GlobalValues;
 using Portfolio_WPF_App.ViewModels.Handler;
 using System;
 using System.Windows.Input;
@@ -127,7 +128,7 @@ namespace Portfolio_WPF_App.ViewModels
             }
             catch (Exception e)
             {
-                // TODO: Log Exception
+                LogHandler.WriteLog(e.StackTrace, LogLevel.WARNING);
             }
         }
 

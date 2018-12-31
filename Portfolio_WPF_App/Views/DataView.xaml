@@ -135,9 +135,9 @@
                                    HorizontalAlignment="Center"
                                    Foreground="White"/>
                     </Border>
-                    <!--
                     <ScrollViewer  Grid.Row="1"
-                                   HorizontalScrollBarVisibility="Auto">
+                                   HorizontalScrollBarVisibility="Auto"
+                                   Visibility="{Binding HideScrollViewer, Mode=OneWay}">
                         <StackPanel VerticalAlignment="Top" 
                                     HorizontalAlignment="Left">
                             <TextBox Text="{Binding TextLogFile}"
@@ -149,9 +149,9 @@
                             </TextBox>
                         </StackPanel>
                     </ScrollViewer>
-                    -->
                     <DataGrid x:Name="MetroDataGrid"
                               Grid.Row="1"
+                              Visibility="{Binding HideDataGrid, Mode=OneWay}"
                               Margin="2"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"

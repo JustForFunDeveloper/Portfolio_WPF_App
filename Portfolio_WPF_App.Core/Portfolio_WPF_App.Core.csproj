@@ -59,6 +59,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Handler\DataBaseHandler\AbstractDBHandler.cs" />
+    <Compile Include="Handler\DataBaseHandler\DBHandler.cs" />
+    <Compile Include="Handler\DataBaseHandler\SQLConstants.cs" />
+    <Compile Include="Handler\DataBaseHandler\SQLite\SQLiteHandler.cs" />
+    <Compile Include="Handler\DataBaseHandler\SQLQueryBuilder.cs" />
     <Compile Include="Handler\FileHandler.cs" />
     <Compile Include="Handler\LogHandler.cs" />
     <Compile Include="Handler\XMLHandler.cs" />

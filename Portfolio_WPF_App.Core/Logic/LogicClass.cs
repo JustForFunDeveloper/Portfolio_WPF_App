@@ -26,7 +26,18 @@ namespace Portfolio_WPF_App.Core.Logic
         public string LogicTitle { get => _logicTitle; }
         public LogHandler LogHandler { get => _logHandler; }
         public FileHandler FileHandler { get => _fileHandler; }
-        public Config Config { get => _config; set => _config = value; }
+        public Config Config {
+            get => _config;
+            set
+            {
+                _config = value;
+                if (Enum.TryParse(Config.Debug_Level.level, out LogLevel loglevel))
+                    LogHandler.LogLevel = loglevel;
+                else
+                    LogHandler.WriteLog("Couldn't change loglevel of the LogHandler", LogLevel.ERROR);
+
+            }
+        }
         public XMLHandler XmlHandler { get => _xmlHandler; set => _xmlHandler = value; }
 
         public LogicClass(string LogFileName, string LogFileFullPath, LogLevel logLevel)
@@ -39,8 +50,6 @@ namespace Portfolio_WPF_App.Core.Logic
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
             _logicVersion = fileVersionInfo.FileVersion;
             _logicTitle = fileVersionInfo.FileDescription;
-
-            LogHandler.WriteLog(this + " Created", LogLevel.DEBUG);
             CreateDataBase();
         }
 

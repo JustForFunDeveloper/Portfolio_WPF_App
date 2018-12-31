@@ -9,6 +9,7 @@ using System.Reflection;
 
 namespace Portfolio_WPF_App.Control
 {
+    //TODO: Remove Test Methods
     public class Adapter
     {
         private Controller _controller = Controller.Instance;
@@ -18,8 +19,6 @@ namespace Portfolio_WPF_App.Control
 
         public Adapter()
         {
-            // TODO:Change complete Logic!
-
             _logic = new LogicClass(
                 GlobalConstants.LOG_FILE_NAME,
                 GlobalConstants.LOG_FILE_FULL_PATH,
@@ -28,42 +27,45 @@ namespace Portfolio_WPF_App.Control
             // Test method remove later
             _logic.TestEvent += OnTestEvent;
 
+            #region Connected Home View Events
             _controller.ReloadHomeView += OnReloadHomeView;
+            #endregion
+
+            #region Connected Settings View Events
             _controller.ReloadSettingsView += OnReloadSettingsView;
             _controller.OpenConfig += OnOpenConfig;
             _controller.ActivateConfig += OnActivateConfig;
-            _controller.ReloadDataView += OnReloadDataView;
-            _controller.SaveData += OnSaveData;
-
-            #region AboutView startup values 
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            string version = fileVersionInfo.ProductVersion;
-            _controller.TextVersion(version);
-            _controller.TextLogicTitle(_logic.LogicTitle);
-            _controller.TextLogicVersion(_logic.LogictVersion);
             #endregion
 
-            ReloadDataView();
-            StartUpSettingsView();
+            #region Connected Data View Events
+            _controller.RequestLogData += OnRequestLogData;
+            _controller.RequestLogLevelFilteredData += OnRequestLogLevelFilteredData;
+            _controller.SaveData += OnSaveData;
+            #endregion
+
+            LoadHomeView();
+            LoadSettingsView();
+            LoadDataView();
+            LoadAboutView();
+            LogHandler.WriteLog(this + " Created", LogLevel.DEBUG);
         }
 
-        public void OnReloadHomeView(object sender, object nothing)
+        #region Home View
+        private void OnReloadHomeView(object sender, object nothing)
         {
-            LoadHomeViewSettings();
+            LoadHomeView();
         }
 
-        private void LoadHomeViewSettings()
+        private void LoadHomeView()
         {
-            #region Messages & Report
-            // TODO: Implement Message Buffer and Message Sent Counter
             _controller.TextError(LogHandler.ErrorCounter.ToString());
             _controller.TextWarning(LogHandler.WarningCounter.ToString());
             _controller.TextInfo(LogHandler.InfoCounter.ToString());
-            #endregion
         }
+        #endregion
 
-        public void OnReloadSettingsView(object sender, object nothing)
+        #region SettingsView
+        private void OnReloadSettingsView(object sender, object nothing)
         {
             ReloadSettingsView();
         }
@@ -77,25 +79,41 @@ namespace Portfolio_WPF_App.Control
             _controller.TextActiveConfigFile(configFileName);
         }
 
-        private void StartUpSettingsView()
+        private void LoadSettingsView()
         {
-            Console.WriteLine("StartUpSettingsView");
             // Read the config file name from the ini file and set all ui and config data from the current active file.
             string configFileName = _logic.FileHandler.ReadAllText(GlobalConstants.CONFIG_FILE_NAME, GlobalConstants.CONFIG_FILE_PATH);
+
+            if (configFileName == null)
+            {
+                // Create new config.ini file since its missing and set it to standard values
+                _logic.FileHandler.CreateFileIfNotExist(GlobalConstants.CONFIG_FILE_NAME, GlobalConstants.CONFIG_FILE_PATH, false);
+                _logic.FileHandler.AppendText(GlobalConstants.CONFIG_FILE_NAME, GlobalConstants.STANDARD_XML_NAME, GlobalConstants.CONFIG_FILE_PATH, false);
+
+                configFileName = GlobalConstants.STANDARD_XML_NAME;
+                configFileName = configFileName.Replace(Environment.NewLine,"");
+            }
+
             _controller.TextConfigNameLoaded(configFileName);
 
-            // Check null, if file cant be found create a new empty config file and new standard config!
             string config = _logic.FileHandler.ReadAllText(configFileName, GlobalConstants.CONFIG_FILE_PATH);
 
             if (config == null)
-                return;
+            {
+                // Create new xml file since its missing and set it to standard values
+                string standardXML = _logic.XmlHandler.GetSerializedConfigXML(new Config());
+                _logic.FileHandler.CreateFileIfNotExist(GlobalConstants.STANDARD_XML_NAME, GlobalConstants.STANDARD_XML_PATH, false);
+                _logic.FileHandler.AppendText(GlobalConstants.STANDARD_XML_NAME, standardXML, GlobalConstants.STANDARD_XML_PATH);
+
+                config = _logic.FileHandler.ReadAllText(configFileName, GlobalConstants.CONFIG_FILE_PATH);
+            }
 
             _controller.TextConfigLoaded(config);
             _controller.TextActiveConfigFile(configFileName);
             _logic.Config = _logic.XmlHandler.GetDeserializedConfigObject(config);
         }
 
-        public void OnOpenConfig(object sender, object list)
+        private void OnOpenConfig(object sender, object list)
         {
             ListArguments listArgument = (ListArguments)list;
             List<object> data = (List<object>)listArgument.Value;
@@ -105,13 +123,12 @@ namespace Portfolio_WPF_App.Control
             _controller.TextConfigLoaded(_logic.FileHandler.ReadAllText((string)data[1], path));
         }
 
-        public void OnActivateConfig(object sender, object list)
+        private void OnActivateConfig(object sender, object list)
         {
             ListArguments listArgument = (ListArguments)list;
             List<object> data = (List<object>)listArgument.Value;
             _controller.TextActiveConfigFile((string)data[0]);
             _logic.Config = _logic.XmlHandler.GetDeserializedConfigObject((string)data[1]);
-            //_logic.PrintTestXML(_logic.Config);
 
             // Creates a local copy in the config file path if it doesn't exist.
             short result = _logic.FileHandler.CreateFileIfNotExist((string)data[0], GlobalConstants.CONFIG_FILE_PATH);
@@ -120,19 +137,43 @@ namespace Portfolio_WPF_App.Control
             // Overwrite the config.ini with the current value.
             _logic.FileHandler.OverwriteFile(GlobalConstants.CONFIG_FILE_NAME, (string)data[0], GlobalConstants.CONFIG_FILE_PATH);
         }
+        #endregion
 
-        public void OnReloadDataView(object sender, object nothing)
+        #region Data View
+        private void OnRequestLogData(object sender, object nothing)
         {
-            ReloadDataView();
+            LoadDataView();
         }
 
-        private void ReloadDataView()
+        private void OnRequestLogLevelFilteredData(object sender, ListArguments e)
         {
-            _controller.TextLogNameLoaded(LogHandler.GetCurrentLogName());
-            _controller.TextLogLoaded(LogHandler.ReadLog());
+            string data = LogHandler.ReadLog();
+            string[] lines = data.Split(
+                new[] { Environment.NewLine },
+                StringSplitOptions.None
+                );
+            List<object> list = new List<object>(lines);
+            List<object> filteredList = new List<object>();
+
+            int iter = 0;
+            foreach (string item in list)
+            {
+                if (iter <= 1)
+                {
+                    filteredList.Add(item);
+                    iter++;
+                    continue;
+                }
+                foreach (LogLevel logLevel in e.Value)
+                {
+                    if (item.Contains(logLevel.ToString()))
+                        filteredList.Add(item);
+                }
+            }
+            _controller.LogData(new ListArguments(filteredList));
         }
 
-        public void OnSaveData(object sender, object list)
+        private void OnSaveData(object sender, object list)
         {
             ListArguments listArgument = (ListArguments)list;
             List<object> data = (List<object>)listArgument.Value;
@@ -143,8 +184,32 @@ namespace Portfolio_WPF_App.Control
             _logic.FileHandler.AppendAll((string)data[0], logList);
         }
 
+        private void LoadDataView()
+        {
+            string data = LogHandler.ReadLog();
+            string[] lines = data.Split(
+                new[] { Environment.NewLine },
+                StringSplitOptions.None
+                );
+            List<object> list = new List<object>(lines);
+            _controller.LogData(new ListArguments(list));
+        }
+        #endregion
+
+        #region About View
+        private void LoadAboutView()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fileVersionInfo.ProductVersion;
+            _controller.TextVersion(version);
+            _controller.TextLogicTitle(_logic.LogicTitle);
+            _controller.TextLogicVersion(_logic.LogictVersion);
+        }
+        #endregion
+
         #region Test Method remove later
-        public void OnTestEvent(object sender, BooleanArguments e)
+        private void OnTestEvent(object sender, BooleanArguments e)
         {
             _controller.DbConnected(!e.Value);
 
@@ -161,10 +226,6 @@ namespace Portfolio_WPF_App.Control
             _controller.TextConfigNameLoaded(iter.ToString());
             iter++;
             _controller.TextConfigLoaded(iter.ToString());
-            iter++;
-            _controller.TextLogNameLoaded(iter.ToString());
-            iter++;
-            _controller.TextLogLoaded(iter.ToString());
             iter++;
         }
         #endregion

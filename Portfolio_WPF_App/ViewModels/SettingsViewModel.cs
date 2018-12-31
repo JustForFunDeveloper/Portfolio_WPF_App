@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace Portfolio_WPF_App.ViewModels
 {
-    //TODO: Implement User & Password Bindings
+    //TODO: Missing Error Bindings
     public class SettingsViewModel : PropertyChangedViewModel
     {
         private readonly PropertyChangedViewModel _mainViewModel;
@@ -89,7 +89,7 @@ namespace Portfolio_WPF_App.ViewModels
 
         private void SaveConfigCommand()
         {
-            List<string> data = new List<string> { TextConfigNameLoaded, TextConfigLoaded };
+            List<object> data = new List<object> { TextConfigNameLoaded, TextConfigLoaded };
             Mediator.NotifyColleagues("ActivateConfigCommand", data);
         }
 
@@ -244,7 +244,7 @@ namespace Portfolio_WPF_App.ViewModels
             openFileDialog.Multiselect = false;
             if (openFileDialog.ShowDialog() == true)
             {
-                List<string> data = new List<string> { openFileDialog.FileName, openFileDialog.SafeFileName };
+                List<object> data = new List<object> { openFileDialog.FileName, openFileDialog.SafeFileName };
                 Mediator.NotifyColleagues("OpenConfigCommand", data);
             }
         }

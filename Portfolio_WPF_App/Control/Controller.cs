@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Portfolio_WPF_App.Control
 {
-    public class Controller : IHomeView
+    public class Controller : IHomeView, ISettingsView, IDataView
     {
         private static Controller instance = null;
         private static readonly object padlock = new object();
@@ -18,7 +18,6 @@ namespace Portfolio_WPF_App.Control
         public event EventHandler ReloadHomeView;
         #endregion
 
-        // TODO: Save -NewUsername and -NewPassword Event is missing.
         #region Settings View Events
         /// <summary>
         /// <see cref="ViewModels.SettingsViewModel"/>
@@ -35,19 +34,44 @@ namespace Portfolio_WPF_App.Control
         /// Is invoked when the Save Config button is pressed.
         /// </summary>
         public event EventHandler<ListArguments> ActivateConfig;
+        /// <summary>
+        /// <see cref="ViewModels.SettingsViewModel"/><para />
+        /// Is invoked when the Save button from the new username is pressed.
+        /// </summary>
+        public event EventHandler<ListArguments> SaveNewUserName;
+        /// <summary>
+        /// <see cref="ViewModels.SettingsViewModel"/><para />
+        /// Is invoked when the Save button from the new password is pressed.
+        /// </summary>
+        public event EventHandler<ListArguments> SaveNewPassword;
         #endregion
 
         #region Data View Events
         /// <summary>
         /// <see cref="ViewModels.DataViewModel"/>
-        /// Is invoked if the ReloadDataView signal is sent.
-        /// </summary>
-        public event EventHandler ReloadDataView;
-        /// <summary>
-        /// <see cref="ViewModels.DataViewModel"/>
         /// Is invoked if the Save Data button is pressed.
         /// </summary>
         public event EventHandler<ListArguments> SaveData;
+        /// <summary>
+        /// <see cref="ViewModels.DataViewModel"/>
+        /// Is invoked if there is a request for all LogData.
+        /// </summary>
+        public event EventHandler RequestLogData;
+        /// <summary>
+        /// <see cref="ViewModels.DataViewModel"/>
+        /// Is invoked if there is a request for all Data.
+        /// </summary>
+        public event EventHandler RequestData;
+        /// <summary>
+        /// <see cref="ViewModels.DataViewModel"/>
+        /// Is invoked if there is a request for LogData with LogLevel filtered.
+        /// </summary>
+        public event EventHandler<ListArguments> RequestLogLevelFilteredData;
+        /// <summary>
+        /// <see cref="ViewModels.DataViewModel"/>
+        /// Is invoked if there is a request for Data with DateTime filtered.
+        /// </summary>
+        public event EventHandler<DateTime> RequestDateTimeFilteredData;
         #endregion
 
         public Controller()
@@ -57,9 +81,14 @@ namespace Portfolio_WPF_App.Control
             Mediator.Register("ReloadSettingsView", OnReloadSettingsView);
             Mediator.Register("OpenConfigCommand", OnOpenConfig);
             Mediator.Register("ActivateConfigCommand", OnActivateConfig);
+            Mediator.Register("SaveNewUserNameCommand", OnSaveNewUserName);
+            Mediator.Register("SaveNewPasswordCommand", OnSaveNewPassword);
 
-            Mediator.Register("ReloadDataView", OnReloadDataView);
-            Mediator.Register("SaveLogCommand", OnSaveLog);
+            Mediator.Register("SaveDataCommand", OnSaveData);
+            Mediator.Register("RequestLogDataCommand", OnRequestLogData);
+            Mediator.Register("RequestDataCommand", OnRequestData);
+            Mediator.Register("RequestLogLevelFilteredDataCommand", OnRequestLogLevelFilteredData);
+            Mediator.Register("RequestDateTimeFilteredDataCommand", OnRequestDateTimeFilteredData);
         }
 
         /// <summary>
@@ -99,7 +128,6 @@ namespace Portfolio_WPF_App.Control
         /// <param name="value">string value of the messages in the database.</param>
         public void TextMsgInDB(string value)
         {
-            //TODO: Rename this
             Mediator.NotifyColleagues("OnTextMsgInDB", value);
         }
 
@@ -137,16 +165,6 @@ namespace Portfolio_WPF_App.Control
         #region Settings View
         /// <summary>
         /// <see cref="ViewModels.SettingsViewModel"/><para />
-        /// Displays the current activ config file name.
-        /// </summary>
-        /// <param name="value">string of the current active config file name.</param>
-        public void TextActiveConfigFile(string value)
-        {
-            Mediator.NotifyColleagues("OnTextActiveConfigFile", value);
-        }
-
-        /// <summary>
-        /// <see cref="ViewModels.SettingsViewModel"/><para />
         /// Displays the current loaded config file name.
         /// </summary>
         /// <param name="value">string value of the loaded config file name.</param>
@@ -164,27 +182,37 @@ namespace Portfolio_WPF_App.Control
         {
             Mediator.NotifyColleagues("OnTextConfigLoaded", value);
         }
+
+        /// <summary>
+        /// <see cref="ViewModels.SettingsViewModel"/><para />
+        /// Displays the current activ config file name.
+        /// </summary>
+        /// <param name="value">string of the current active config file name.</param>
+        public void TextActiveConfigFile(string value)
+        {
+            Mediator.NotifyColleagues("OnTextActiveConfigFile", value);
+        }
         #endregion
 
         #region Data View
         /// <summary>
         /// <see cref="ViewModels.DataViewModel"/><para />
-        /// Displays the current loaded log file name.
+        /// Sends the LogData to the view.
         /// </summary>
-        /// <param name="value">string value of the loaded config file name.</param>
-        public void TextLogNameLoaded(string value)
+        /// <param name="data">string value of the loaded config file name.</param>
+        public void LogData(ListArguments data)
         {
-            Mediator.NotifyColleagues("OnTextLogFileName", value);
+            Mediator.NotifyColleagues("OnLogData", data);
         }
 
         /// <summary>
         /// <see cref="ViewModels.DataViewModel"/><para />
-        /// Displays the current loaded log.
+        /// Sends the Data to the view.
         /// </summary>
-        /// <param name="value">string value of the loaded config.</param>
-        public void TextLogLoaded(string value)
+        /// <param name="data">string value of the loaded config.</param>
+        public void Data(ListArguments data)
         {
-            Mediator.NotifyColleagues("OnTextLogFile", value);
+            Mediator.NotifyColleagues("OnData", data);
         }
         #endregion
 
@@ -221,6 +249,7 @@ namespace Portfolio_WPF_App.Control
         #endregion
 
         #region Event Invoke Methods
+        #region Home View
         /// <summary>
         /// Catches the Mediator message and invokes the <see cref="ReloadHomeView"/> event.
         /// </summary>
@@ -229,7 +258,9 @@ namespace Portfolio_WPF_App.Control
         {
             ReloadHomeView?.Invoke(this, null);
         }
+        #endregion
 
+        #region Settings View
         /// <summary>
         /// Catches the Mediator message and invokes the <see cref="OnReloadSettingsView"/> event.
         /// </summary>
@@ -260,23 +291,77 @@ namespace Portfolio_WPF_App.Control
         }
 
         /// <summary>
-        /// Catches the Mediator message and invokes the <see cref="OnReloadDataView"/> event.
+        /// Catches the Mediator message and invokes the <see cref="SaveNewUserName"/> event.
         /// </summary>
         /// <param name="value"></param>
-        protected virtual void OnReloadDataView(object value)
+        private void OnSaveNewUserName(object value)
         {
-            ReloadDataView?.Invoke(this, null);
+            List<object> list = (List<object>)value;
+            SaveNewUserName?.Invoke(this, new ListArguments(list));
         }
 
+        /// <summary>
+        /// Catches the Mediator message and invokes the <see cref="SaveNewPassword"/> event.
+        /// </summary>
+        /// <param name="value"></param>
+        private void OnSaveNewPassword(object value)
+        {
+            List<object> list = (List<object>)value;
+            SaveNewPassword?.Invoke(this, new ListArguments(list));
+        }
+        #endregion
+
+        #region Data View
         /// <summary>
         /// Catches the Mediator message and invokes the <see cref="SaveData"/> event.
         /// </summary>
         /// <param name="value"></param>
-        protected virtual void OnSaveLog(object value)
+        protected virtual void OnSaveData(object value)
         {
             List<object> list = (List<object>)value;
             SaveData?.Invoke(this, new ListArguments(list));
         }
+
+        /// <summary>
+        /// Catches the Mediator message and invokes the <see cref="RequestLogData"/> event.
+        /// </summary>
+        /// <param name="value"></param>
+        private void OnRequestLogData(object value)
+        {
+            List<object> list = (List<object>)value;
+            RequestLogData?.Invoke(this, new ListArguments(list));
+        }
+
+        /// <summary>
+        /// Catches the Mediator message and invokes the <see cref="RequestData"/> event.
+        /// </summary>
+        /// <param name="value"></param>
+        private void OnRequestData(object value)
+        {
+            List<object> list = (List<object>)value;
+            RequestData?.Invoke(this, new ListArguments(list));
+        }
+
+        /// <summary>
+        /// Catches the Mediator message and invokes the <see cref="RequestLogLevelFilteredData"/> event.
+        /// </summary>
+        /// <param name="value"></param>
+        private void OnRequestLogLevelFilteredData(object value)
+        {
+            List<object> list = (List<object>)value;
+            RequestLogLevelFilteredData?.Invoke(this, new ListArguments(list));
+        }
+
+        /// <summary>
+        /// Catches the Mediator message and invokes the <see cref="RequestDateTimeFilteredData"/> event.
+        /// </summary>
+        /// <param name="value"></param>
+        private void OnRequestDateTimeFilteredData(object value)
+        {
+            DateTime dateTime = (DateTime)value;
+            RequestDateTimeFilteredData?.Invoke(this, dateTime);
+        }
+        #endregion
         #endregion
     }
 }

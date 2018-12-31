@@ -9,7 +9,6 @@ namespace Portfolio_WPF_App.Views
     /// </summary>
     public partial class SettingsView : UserControl
     {
-        //TODO: Implement the PasswordBox Events
         public SettingsView()
         {
             InitializeComponent();

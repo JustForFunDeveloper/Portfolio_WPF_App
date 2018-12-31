@@ -28,10 +28,11 @@ namespace Portfolio_WPF_App.Core.Handler
         public static long WarningCounter { get => _warningCounter; }
         public static long InfoCounter { get => _infoCounter; }
         public static long ErrorCounter { get => _errorCounter; }
+        public static LogLevel LogLevel { get => _logLevel; set => _logLevel = value; }
 
         public LogHandler(string logFileName, string logFilePath, LogLevel logLevel)
         {
-            _logLevel = logLevel;
+            LogLevel = logLevel;
             _logFileName = logFileName;
             _logFilePath = logFilePath;
             _fileHandler = new FileHandler();
@@ -39,7 +40,7 @@ namespace Portfolio_WPF_App.Core.Handler
 
         public static void WriteLog(string text, LogLevel logLevel)
         {
-            if (logLevel >= _logLevel)
+            if (logLevel >= LogLevel)
             {
                 CreateLogFile();
                 StringBuilder stringBuilder = new StringBuilder();
