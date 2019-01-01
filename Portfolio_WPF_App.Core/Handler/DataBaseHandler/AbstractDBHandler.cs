@@ -104,6 +104,13 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler
         /// </summary>
         public abstract void StopDeleteThread();
 
+        /// <summary>
+        /// Gets the current rows from the table. Since this is accomplished with a trigger table its just a small querie.
+        /// </summary>
+        /// <param name="table">The table to get the current rows from.</param>
+        /// <returns>Returns the number of rows in the given table</returns>
+        public abstract int GetCurrentRowsFromTable(Table table);
+
         #region Low Level Methods
         /// <summary>
         /// The event to get update events on the <see cref="FetchQuery(string, List{KeyValuePair{int, string}}, int)"/> method.

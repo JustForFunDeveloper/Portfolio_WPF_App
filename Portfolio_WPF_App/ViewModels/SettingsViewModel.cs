@@ -116,6 +116,7 @@ namespace Portfolio_WPF_App.ViewModels
         private void SaveNewUserNameCommand()
         {
             Mediator.NotifyColleagues("SaveNewUserNameCommand", NewUsername);
+            NewUsername = "";
         }
 
         public ICommand SaveNewPassword
@@ -141,7 +142,7 @@ namespace Portfolio_WPF_App.ViewModels
         private void SaveNewPasswordCommand()
         {
             //TODO: Implement pre check of newPassword and repeatPassword
-            Mediator.NotifyColleagues("SaveNewPasswordCommand", NewUsername);
+            Mediator.NotifyColleagues("SaveNewPasswordCommand", NewPassword);
         }
 
         public string TextConfigNameLoaded

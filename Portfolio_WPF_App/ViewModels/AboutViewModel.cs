@@ -128,7 +128,7 @@ namespace Portfolio_WPF_App.ViewModels
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.WARNING);
+                LogHandler.WriteLog(e.ToString(), LogLevel.WARNING);
             }
         }
 

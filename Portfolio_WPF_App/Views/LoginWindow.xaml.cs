@@ -11,14 +11,10 @@ namespace Portfolio_WPF_App.Views
     /// </summary>
     public partial class LoginWindow : MetroWindow
     {
-        private static MetroWindow _mainView;
-
         public LoginWindow()
         {
             InitializeComponent();
         }
-
-        public static MetroWindow GetInstance { get => _mainView; }
 
         private void PasswordBox_PasswordChanged(object sender, System.Windows.RoutedEventArgs e)
         {

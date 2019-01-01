@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Portfolio_WPF_App.Core.DataModel;
 using Portfolio_WPF_App.Core.Handler;
 using Portfolio_WPF_App.DataModel;
 using Portfolio_WPF_App.ViewModels.Handler;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -26,7 +28,7 @@ namespace Portfolio_WPF_App.ViewModels
 
         private ICommand _saveLog;
 
-        private string _textLogFileName = "LOGS";
+        private string _textLogFileName = "";
         private string _textLogFile = "";
 
         private bool _DEBUGChecked = false;
@@ -39,12 +41,8 @@ namespace Portfolio_WPF_App.ViewModels
         private CultureInfo _cultureFormat;
         private DateTime _selectedDateTime;
 
-        private DispatcherTimer timer;
-        private int counter = 1;
-
-        public ObservableCollection<Log> LogCollection { get; } = new ObservableCollection<Log>();
         public ObservableCollection<DataButton> SplitButtonItems { get; } = new ObservableCollection<DataButton>();
-        //TODO: Create seperate Data Collection
+        public ObservableCollection<Data> DataCollection { get; } = new ObservableCollection<Data>();
 
         public DataViewModel(PropertyChangedViewModel mainViewModel)
         {
@@ -65,54 +63,22 @@ namespace Portfolio_WPF_App.ViewModels
 
             SplitButtonItems.Add(new DataButton("Logs"));
             SplitButtonItems.Add(new DataButton("Data"));
-
-            timer = new DispatcherTimer(DispatcherPriority.Background, Application.Current.Dispatcher);
-            timer.Interval = TimeSpan.FromMilliseconds(100);
-            timer.Tick += Timer_Tick;
-
-            Start();
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            if (LogCollection.Count >= 29)
-            {
-                Stop();
-            }
-            var newLog = new Log
-            {
-                Id = counter,
-                Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                MessageLevel = LogLevel.DEBUG.ToString(),
-                Message = "Das ist eine laaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa aaaaaaaaaaaaaa aaaaaaaaaaa aaaaaaaange eine Test Message"
-            };
-            Action action = () => { LogCollection.Add(newLog); };
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(action));
-            counter++;
-        }
-
-        public void Start()
-        {
-            timer.Start();
-        }
-
-        public void Stop()
-        {
-            timer.Stop();
-        }
-
-        private string GetSelectedItemAsString(Log log, string Header)
+        private string GetSelectedItemAsString(Data data, string Header)
         {
             switch (Header)
             {
                 case "Id":
-                    return log.Id.ToString();
+                    return data.Id.ToString();
                 case "Time":
-                    return log.Time;
-                case "Message Level":
-                    return log.MessageLevel;
+                    return data.Time;
+                case "Name":
+                    return data.Name;
+                case "Surename":
+                    return data.SureName;
                 case "Message":
-                    return log.Message;
+                    return data.Message;
                 default:
                     return "";
             }
@@ -225,40 +191,51 @@ namespace Portfolio_WPF_App.ViewModels
             TextLogFile = String.Join(Environment.NewLine, listArguments.Value);
         }
 
-        private void OnData(object obj)
+        private void OnData(object value)
         {
-            //TODO: Implement Data Handling
-            throw new NotImplementedException();
+            DataCollection.Clear();
+            ListArguments listArguments = (ListArguments)value;
+            List<object> listData = listArguments.Value;
+            foreach (object item in listData)
+            {
+                DataCollection.Add((Data)item);
+            }
         }
 
         private void OpenSaveFileDialog()
         {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+            saveFileDialog.DefaultExt = "txt";
+            saveFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog.FilterIndex = 1;
+            string timeString = DateTime.Now.ToString();
+            timeString = timeString.Replace(':', '-');
+            timeString = timeString.Replace(' ', '_');
+            saveFileDialog.FileName = timeString;
             if (SplitButtonIndex.Equals(0))
             {
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
-                saveFileDialog.Title = "Save Log File";
-                saveFileDialog.DefaultExt = "txt";
-                saveFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                saveFileDialog.FilterIndex = 1;
-                string timeString = DateTime.Now.ToString();
-                timeString = timeString.Replace(':', '-');
-                timeString = timeString.Replace(' ', '_');
-                saveFileDialog.FileName = timeString;
                 if (saveFileDialog.ShowDialog() == true)
                 {
+                    saveFileDialog.Title = "Save Log File";
                     List<object> data = new List<object> { saveFileDialog.SafeFileName, TextLogFile };
                     Mediator.NotifyColleagues("SaveDataCommand", data);
                 }
             }
             else
             {
-                //TODO: Save Datagrid Entries into a file!
-            }
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    saveFileDialog.Title = "Save Data File";
+                    StringBuilder stringBuilder = new StringBuilder();
+                    foreach (Data item in DataCollection)
+                    {
+                        stringBuilder.AppendLine(item.ToString());
+                    }
 
-            if (TextLogFile.Length.Equals(0))
-            {
-                return;
+                    List<object> data = new List<object> { saveFileDialog.SafeFileName, stringBuilder.ToString() };
+                    Mediator.NotifyColleagues("SaveDataCommand", data);
+                }
             }
         }
 
@@ -388,7 +365,6 @@ namespace Portfolio_WPF_App.ViewModels
         private void OnDataChange(object value)
         {
             SplitButtonIndex = (int)value;
-            //TODO: Reload Data in the table!
         }
 
         private void HideDataGridAndShowScrollViewer(bool value)

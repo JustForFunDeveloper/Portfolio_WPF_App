@@ -315,8 +315,7 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler
             }
             catch (Exception e)
             {
-                //TODO: Change that.
-                throw;
+                throw e;
             }
         }
 

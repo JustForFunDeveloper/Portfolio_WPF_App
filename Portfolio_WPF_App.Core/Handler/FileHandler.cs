@@ -66,7 +66,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 return -1;
             }
             return 0;
@@ -112,7 +112,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 return -1;
             }
             return 0;
@@ -143,7 +143,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 return -1;
             }
             return 0;
@@ -174,7 +174,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 return -1;
             }
             return 0;
@@ -206,7 +206,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 return -1;
             }
             return 0;
@@ -230,7 +230,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 return -1;
             }
             return 0;
@@ -262,7 +262,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 return -1;
             }
             return 0;
@@ -325,7 +325,7 @@ namespace Portfolio_WPF_App.Core.Handler
                     }
                     catch (Exception e)
                     {
-                        LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                        LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                         OnCopyFileError(new ExceptionArgs(e));
                     }
                 }
@@ -347,7 +347,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 OnCopyFileError(new ExceptionArgs(e));
                 progressThread.Abort();
             }
@@ -370,7 +370,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 OnDeleteFileError(new ExceptionArgs(e));
             }
         }
@@ -401,7 +401,7 @@ namespace Portfolio_WPF_App.Core.Handler
                     }
                     catch (Exception e)
                     {
-                        LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                        LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                         OnMoveFileError(new ExceptionArgs(e));
                     }
                 }
@@ -423,7 +423,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 OnMoveFileError(new ExceptionArgs(e));
                 progressThread.Abort();
             }
@@ -446,7 +446,7 @@ namespace Portfolio_WPF_App.Core.Handler
             }
             catch (Exception e)
             {
-                LogHandler.WriteLog(e.StackTrace, LogLevel.ERROR);
+                LogHandler.WriteLog(e.ToString(), LogLevel.ERROR);
                 OnMoveFileError(new ExceptionArgs(e));
             }
         }

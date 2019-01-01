@@ -101,7 +101,8 @@
                 <Controls:DateTimePicker Margin="10,0,0,0"
                                          Culture="{Binding CultureFormat}"
                                          PickerVisibility="All"
-                                         SelectedDate="{Binding SelectedDateTime}">
+                                         SelectedDate="{Binding SelectedDateTime}"
+                                         Visibility="Hidden">
                 </Controls:DateTimePicker>
                 <Controls:SplitButton
                     Width="150"
@@ -161,7 +162,7 @@
                               EnableColumnVirtualization="True"
                               EnableRowVirtualization="True"
                               IsReadOnly="True"
-                              ItemsSource="{Binding LogCollection}"
+                              ItemsSource="{Binding DataCollection}"
                               RenderOptions.ClearTypeHint="Enabled"
                               SelectionUnit="Cell"
                               TextOptions.TextFormattingMode="Display">
@@ -189,8 +190,14 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding MessageLevel}"
-                                                Header="Message Level"
+                            <DataGridTextColumn Binding="{Binding Name}"
+                                                Header="Name"
+                                                Width="2*"
+                                                HeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                                CellStyle="{StaticResource DataGridCellStyle}">
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding SureName}"
+                                                Header="Surename"
                                                 Width="2*"
                                                 HeaderStyle="{StaticResource DataGridHeaderStyle}"
                                                 CellStyle="{StaticResource DataGridCellStyle}">

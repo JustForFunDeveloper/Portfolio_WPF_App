@@ -72,8 +72,8 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler
         private string _dbPath;
         private Dictionary<string, Table> _tables;
         private DataBaseType _dataBaseType;
-        private System.Timers.Timer _deleteTimer;
-        private bool _deleteTimerStatus = false;
+        //private System.Timers.Timer _deleteTimer;
+        //private bool _deleteTimerStatus = false;
 
         #endregion
 
@@ -323,14 +323,14 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler
             //TODO Rework delete thread.
             throw new NotImplementedException();
 
-            if (_deleteTimerStatus)
-                throw new InvalidOperationException("Timer already started!");
+            //if (_deleteTimerStatus)
+            //    throw new InvalidOperationException("Timer already started!");
 
-            _deleteTimer = new System.Timers.Timer(millis);
-            _deleteTimer.Elapsed += OnDeleteTimer;
-            _deleteTimer.AutoReset = true;
-            _deleteTimer.Enabled = true;
-            _deleteTimerStatus = true;
+            //_deleteTimer = new System.Timers.Timer(millis);
+            //_deleteTimer.Elapsed += OnDeleteTimer;
+            //_deleteTimer.AutoReset = true;
+            //_deleteTimer.Enabled = true;
+            //_deleteTimerStatus = true;
         }
 
         /// <summary>
@@ -340,12 +340,22 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler
         {
             throw new NotImplementedException();
 
-            if (!_deleteTimerStatus)
-                throw new InvalidOperationException("Timer not yet started!");
+            //if (!_deleteTimerStatus)
+            //    throw new InvalidOperationException("Timer not yet started!");
 
-            _deleteTimer.Stop();
-            _deleteTimer.Dispose();
-            _abstractDBHandler.StopDeleteThread();
+            //_deleteTimer.Stop();
+            //_deleteTimer.Dispose();
+            //_abstractDBHandler.StopDeleteThread();
+        }
+
+        /// <summary>
+        /// Gets the current rows from the table. Since this is accomplished with a trigger table its just a small querie.
+        /// </summary>
+        /// <param name="tableName">The tableName to get the current rows from.</param>
+        /// <returns>Returns the number of rows in the given table</returns>
+        public int GetCurrentRowsFromTable(string tableName)
+        {
+            return _abstractDBHandler.GetCurrentRowsFromTable(_tables[tableName]);
         }
 
         #region Low Level Methods

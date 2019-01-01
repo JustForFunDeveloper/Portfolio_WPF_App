@@ -1,5 +1,5 @@
-﻿using Portfolio_WPF_App.GlobalValues;
-using Portfolio_WPF_App.ViewModels.Handler;
+﻿using Portfolio_WPF_App.ViewModels.Handler;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,17 +14,19 @@ namespace Portfolio_WPF_App.ViewModels
         private Visibility _isErrorMsgVisible = Visibility.Hidden;
 
         private string _username = "";
-        private string _default_Username = GlobalConstants.UI_USERNAME;
+        private string _default_Username = "";
         private string _password = "";
-        private string _default_Password = GlobalConstants.UI_PASSWORD;
+        private string _default_Password = "";
 
         PasswordBox _passWordBox;
 
         public LoginWindowModel()
         {
+            Mediator.Register("OnLoginData", OnLoginData);
             // PasswordBox Binding Workaround
-            Mediator.Register("OnPasswordChanged", OnPassword);
+            Mediator.Register("OnPasswordChanged", OnPasswordChanged);
             Mediator.Register("OnEnterPressed", OnEnterPressed);
+            Mediator.NotifyColleagues("OnGetLoginData", null);
         }
 
         public Visibility IsErrorMsgVisible
@@ -57,6 +59,13 @@ namespace Portfolio_WPF_App.ViewModels
             Username = (string)value;
         }
 
+        private void OnLoginData(object value)
+        {
+            List<string> listArguments = (List<string>)value;
+            _default_Username = listArguments[0];
+            _default_Password = listArguments[1];
+        }
+
         public string Password
         {
             get { return _password; }
@@ -66,7 +75,7 @@ namespace Portfolio_WPF_App.ViewModels
             }
         }
 
-        public void OnPassword(object value)
+        public void OnPasswordChanged(object value)
         {
             _passWordBox = (PasswordBox)value;
             Password = (string)_passWordBox.Password;

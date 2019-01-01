@@ -48,8 +48,7 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler.SQLite
             }
             catch (Exception e)
             {
-                // TODO: Change that
-                throw;
+                throw e;
             }
         }
         #endregion
@@ -308,25 +307,18 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler.SQLite
         {
             foreach (Table table in tables.Values)
             {
-                // Get the current row value
-                SQLQueryBuilder sqb = new SQLQueryBuilder();
-                sqb.Select().AddValue("rowCount").From().AddValue(table.TableName + "_count").Where().AddValue("id").Equal().AddValue("1");
-                List<List<object>> result = ReadQuery(sqb.ToString(),
-                    new List<KeyValuePair<int, Type>>()
-                    {
-                        new KeyValuePair<int, Type>(0, typeof(int))
-                    });
+                long result = GetCurrentRowsFromTable(table);
 
-                if (result == null)
+                if (result == 0)
                     continue;
 
-                if ((int)result[0][0] >= table.MaxRows)
+                if (result >= table.MaxRows)
                 {
                     // Calculate 70% and the amount to delete
                     double seventyPercent = (double)table.MaxRows * (double)0.7;
-                    int amountToDelete = (int)result[0][0] - (int)Math.Round(seventyPercent);
+                    long amountToDelete = result - (long)Math.Round(seventyPercent);
 
-                    Console.WriteLine((int)result[0][0] + ">= " + table.MaxRows + " -> Clear the table: " + table.TableName);
+                    Console.WriteLine(result + ">= " + table.MaxRows + " -> Clear the table: " + table.TableName);
 
                     // Start the Thread if it isn't active allready
                     if (!table.DeleteThreadActive)
@@ -365,7 +357,7 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler.SQLite
                             }
                             catch (Exception)
                             {
-                                //TODO: Not sure what to do here! Is called when the Thread is aborted.
+
                             }
                         });
 
@@ -375,6 +367,27 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler.SQLite
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the current rows from the table. Since this is accomplished with a trigger table its just a small querie.
+        /// </summary>
+        /// <param name="table">The table to get the current rows from.</param>
+        /// <returns>Returns the number of rows in the given table</returns>
+        public override int GetCurrentRowsFromTable(Table table)
+        {
+            SQLQueryBuilder sqb = new SQLQueryBuilder();
+            sqb.Select().AddValue("rowCount").From().AddValue(table.TableName + "_count").Where().AddValue("id").Equal().AddValue("1");
+            List<List<object>> result = ReadQuery(sqb.ToString(),
+                new List<KeyValuePair<int, Type>>()
+                {
+                        new KeyValuePair<int, Type>(0, typeof(int))
+                });
+
+            if (result == null)
+                return 0;
+            else
+                return (int)result[0][0];
         }
 
         /// <summary>
@@ -405,8 +418,7 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler.SQLite
             }
             catch (Exception e)
             {
-                // TODO: Change that
-                throw;
+                throw e;
             }
         }
 
@@ -454,8 +466,7 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler.SQLite
             }
             catch (Exception e)
             {
-                //TODO: Change that
-                return null;
+                throw e;
             }
         }
 
@@ -517,8 +528,7 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler.SQLite
                 }
                 catch (Exception e)
                 {
-                    //TODO: Change that
-                    throw;
+                    throw e;
                 }
             });
             FetchThread.Start();
@@ -563,8 +573,7 @@ namespace Portfolio_WPF_App.Core.Handler.DataBaseHandler.SQLite
             }
             catch (Exception e)
             {
-                //TODO: Change that.
-                throw;
+                throw e;
             }
         }
         #endregion

@@ -163,6 +163,7 @@ namespace Portfolio_WPF_App.ViewModels
             if (_loginWindow != null)
             {
                 _loginWindow.Show();
+                Mediator.NotifyColleagues("OnGetLoginData", null);
 
             }
             else
@@ -233,7 +234,8 @@ namespace Portfolio_WPF_App.ViewModels
                     Mediator.NotifyColleagues("ReloadSettingsView", true);
                     break;
                 case 2:
-                    Mediator.NotifyColleagues("ReloadDataView", true);
+                    Mediator.NotifyColleagues("RequestLogDataCommand", null);
+                    Mediator.NotifyColleagues("RequestDataCommand", null);
                     break;
                 default:
                     break;

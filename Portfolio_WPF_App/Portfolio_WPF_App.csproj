@@ -72,9 +72,7 @@
     </ApplicationDefinition>
     <Compile Include="Control\Adapter.cs" />
     <Compile Include="Control\Controller.cs" />
-    <Compile Include="DataModel\Data.cs" />
     <Compile Include="DataModel\DataButton.cs" />
-    <Compile Include="DataModel\Log.cs" />
     <Compile Include="GlobalValues\GlobalConstants.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\DataViewModel.cs" />
@@ -86,6 +84,7 @@
     <Compile Include="ViewModels\Interfaces\IAboutView.cs" />
     <Compile Include="ViewModels\Interfaces\IDataView.cs" />
     <Compile Include="ViewModels\Interfaces\IHomeView.cs" />
+    <Compile Include="ViewModels\Interfaces\ILoginWindow.cs" />
     <Compile Include="ViewModels\Interfaces\ISettingsView.cs" />
     <Compile Include="ViewModels\Interfaces\ListArguments.cs" />
     <Compile Include="ViewModels\LoginWindowModel.cs" />
@@ -210,4 +209,8 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /E /Y "C:\Users\Tapsi\Documents\C#Projects\Portfolio_WPF_App\Portfolio_WPF_App.Core\bin\Debug\x64\SQLite.Interop.dll" "$(TargetDir)\x64\"
+xcopy /E /Y "C:\Users\Tapsi\Documents\C#Projects\Portfolio_WPF_App\Portfolio_WPF_App.Core\bin\Debug\x86\SQLite.Interop.dll" "$(TargetDir)\x86\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

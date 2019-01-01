@@ -59,6 +59,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModel\Data.cs" />
+    <Compile Include="DataModel\DBEntryGenerator.cs" />
+    <Compile Include="GlobalValues\LogicConstants.cs" />
     <Compile Include="Handler\DataBaseHandler\AbstractDBHandler.cs" />
     <Compile Include="Handler\DataBaseHandler\DBHandler.cs" />
     <Compile Include="Handler\DataBaseHandler\SQLConstants.cs" />

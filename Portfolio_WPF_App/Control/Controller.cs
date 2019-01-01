@@ -5,7 +5,10 @@ using System.Collections.Generic;
 
 namespace Portfolio_WPF_App.Control
 {
-    public class Controller : IHomeView, ISettingsView, IDataView
+    /// <summary>
+    /// The Controller implements all View and Window Interfaces and provides the necessary methods and events for the Adapter as well the logic.
+    /// </summary>
+    public class Controller : IHomeView, ISettingsView, IDataView, ILoginWindow
     {
         private static Controller instance = null;
         private static readonly object padlock = new object();
@@ -74,6 +77,14 @@ namespace Portfolio_WPF_App.Control
         public event EventHandler<DateTime> RequestDateTimeFilteredData;
         #endregion
 
+        #region Login Window Events
+        /// <summary>
+        /// <see cref="ViewModels.LoginWindowModel"/>
+        /// Is invoked if the Login Window is created.
+        /// </summary>
+        public event EventHandler GetLoginData;
+        #endregion
+
         public Controller()
         {
             Mediator.Register("ReloadHomeView", OnReloadHomeView);
@@ -89,6 +100,8 @@ namespace Portfolio_WPF_App.Control
             Mediator.Register("RequestDataCommand", OnRequestData);
             Mediator.Register("RequestLogLevelFilteredDataCommand", OnRequestLogLevelFilteredData);
             Mediator.Register("RequestDateTimeFilteredDataCommand", OnRequestDateTimeFilteredData);
+
+            Mediator.Register("OnGetLoginData", OnGetLoginData);
         }
 
         /// <summary>
@@ -248,6 +261,23 @@ namespace Portfolio_WPF_App.Control
         }
         #endregion
 
+        #region Login Window
+        /// <summary>
+        /// <see cref="ViewModels.LoginWindowModel"/><para />
+        /// Sends the Login Data to the Login Window
+        /// </summary>
+        /// <param name="User">The User fetched from the database.</param>
+        /// <param name="Password">The Password fetched from the database.</param>
+        public void LoginData(string User, string Password)
+        {
+            Mediator.NotifyColleagues("OnLoginData", new List<string>()
+            {
+                { User },
+                { Password }
+            });
+        }
+        #endregion
+
         #region Event Invoke Methods
         #region Home View
         /// <summary>
@@ -296,7 +326,7 @@ namespace Portfolio_WPF_App.Control
         /// <param name="value"></param>
         private void OnSaveNewUserName(object value)
         {
-            List<object> list = (List<object>)value;
+            List<object> list = new List<object>() { value };
             SaveNewUserName?.Invoke(this, new ListArguments(list));
         }
 
@@ -306,7 +336,7 @@ namespace Portfolio_WPF_App.Control
         /// <param name="value"></param>
         private void OnSaveNewPassword(object value)
         {
-            List<object> list = (List<object>)value;
+            List<object> list = new List<object>() { value };
             SaveNewPassword?.Invoke(this, new ListArguments(list));
         }
         #endregion
@@ -360,6 +390,17 @@ namespace Portfolio_WPF_App.Control
         {
             DateTime dateTime = (DateTime)value;
             RequestDateTimeFilteredData?.Invoke(this, dateTime);
+        }
+        #endregion
+
+        #region Login Window
+        /// <summary>
+        /// Catches the Mediator message and invokes the <see cref="GetLoginData"/> event.
+        /// </summary>
+        /// <param name="value"></param>
+        private void OnGetLoginData(object value)
+        {
+            GetLoginData?.Invoke(this, null);
         }
         #endregion
         #endregion
